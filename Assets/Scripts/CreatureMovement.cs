@@ -12,7 +12,7 @@ public class CreatureMovement : MonoBehaviour
     Transform wanderTarget;
     NavMeshAgent agent;
     Vector3 home;
-    List<Transform> targetMemoryList;
+    public List<Transform> targetMemoryList;
     float rotTime = 3f;
     float rotTimer = 0;
     int rotLocNum = 0;
@@ -56,9 +56,9 @@ public class CreatureMovement : MonoBehaviour
                 rotTimer = 0;
             }
         }
-        else if (alive && !isNight && targetMemoryList.Count >= 1)
+        else if (alive && !isNight && targetMemoryList.Count != 0 && targetMemoryList[0].GetComponent<MemoryStats>().justSpawned == false)
         {
-            agent.destination = targetMemoryList[1].transform.position;
+            agent.destination = targetMemoryList[0].transform.position;
             Vector3 direction = agent.destination - transform.position;
             if (direction.magnitude <= memCheckRange)
             {
@@ -108,8 +108,10 @@ public class CreatureMovement : MonoBehaviour
         {
             GetComponent<StartingGenes>().fullness += 1;
             GameObject mem = Instantiate(memPrefab, collision.gameObject.transform.position, Quaternion.identity);
-            mem.transform.parent = GameObject.Find("Full Creature").transform;
+            mem.transform.parent = gameObject.transform.parent;
             targetMemoryList.Add(mem.transform);
+            target = GameObject.Find("Cube (1)");
+            //collision.gameObject.SetActive(false);
             Destroy(collision.gameObject);
             hasTarget = false;
         }
